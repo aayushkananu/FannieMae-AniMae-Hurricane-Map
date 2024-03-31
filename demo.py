@@ -61,37 +61,36 @@ plt.tight_layout()
 plt.show()
 
 
-# Setting up the headers
 headers = {
-    'Authorization': api_key,
+    'Authorization': f'Bearer {api_key}',
     'Accept': 'application/json',
     'Content-Type': 'application/json'
 }
 
-# The body of the POST request
 payload = {
     "m": "2022.1",
     "facilities": [{
         "id": "1",
-        "name": "berkeley office",
-        "activity": "office",
-        "street1": "2000 hearst avenue",
-        "city": "berkeley",
-        "state": "ca",
-        "postal_code": "94709",
-        "country": "united states",
-        "latitude": 37.8734494,
-        "longitude": -122.2706614
+        "name": "New Orleans Location",
+        "activity": "residential",
+        "city": "New Orleans",
+        "state": "LA",
+        "country": "United States",
+        "latitude": 29.9511,
+        "longitude": -90.0715
     }]
 }
 
-# Making the POST request to create a job
+# Step 2: Make API request to get job ID
 response = requests.post(f'https://{host_name}/AppsServices/api/v1/score-facilities-impact/jobs', json=payload, headers=headers)
+job_details = response.json()
+job_id = job_details['job_id']
+print(f"Job ID: {job_id}")
 
-# Checking the response
-if response.status_code == 200:
-    print("Job created successfully.")
-    job_id = response.json()['job_id']
-    print("Job ID:", job_id)
-else:
-    print("Failed to create job. Status Code:", response.status_code)
+# Step 3: Retrieve the results
+# Note: In a real scenario, you would likely need to add a delay or polling mechanism to wait for the job to complete.
+result_response = requests.get(f'https://{host_name}/AppsServices/api/v1/jobs/{job_id}', headers=headers)
+job_results = result_response.json()
+
+# Assuming the job has completed and results are available
+print(job_results)
